@@ -203,49 +203,11 @@ const demoProducts: Product[] = [
   },
 ]
 
-export async function getProducts(): Promise<Product[]> {
-  try {
-    const { db } = await import("./firebase")
-    const { collection, getDocs, query, orderBy } = await import("firebase/firestore")
-    
-    const q = query(
-      collection(db, "products"),
-      orderBy("featured", "desc"),
-      orderBy("name", "asc")
-    )
-    const snapshot = await getDocs(q)
+// Funciones movidas a lib/products-db.ts para mejor organización
 
-    if (snapshot.empty) {
-      console.warn("No products found in database, using demo data")
-      return demoProducts
-    }
+// Función movida a lib/products-db.ts
 
-    const products = snapshot.docs.map(doc => ({
-      id: parseInt(doc.id),
-      ...doc.data()
-    } as Product))
-
-    return products || demoProducts
-  } catch (error) {
-    console.warn("Database not available, using demo products:", error)
-    return demoProducts
-  }
-}
-
-export async function getFeaturedProducts(): Promise<Product[]> {
-  const products = await getProducts()
-  return products.filter((product) => product.featured)
-}
-
-export async function getProductsByCategory(category: string): Promise<Product[]> {
-  const products = await getProducts()
-  return products.filter((product) => product.category === category)
-}
-
-export async function getProductById(id: number): Promise<Product | null> {
-  const products = await getProducts()
-  return products.find((product) => product.id === id) || null
-}
+// Función movida a lib/products-db.ts
 
 // Exportar productos por defecto para compatibilidad
 export { demoProducts as products }

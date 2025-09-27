@@ -15,7 +15,7 @@ import { useScroll } from "@/hooks/use-scroll"
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const { itemCount } = useCart()
-  const { user, logout } = useAuth()
+  const { user, logout, loading } = useAuth()
   const scrolled = useScroll()
 
   const navigation = [
@@ -98,7 +98,7 @@ export function Navbar() {
         {/* Lado Derecho */}
         <div className="flex items-center gap-2">
           {/* Carrito - Solo visible si el usuario está logueado */}
-          {user && (
+          {!loading && user && (
             <Link href="/carrito">
               <Button variant="ghost" className="text-white hover:bg-white/10 relative px-3 py-2">
                 <div className="flex items-center gap-2">
@@ -118,11 +118,21 @@ export function Navbar() {
             </Link>
           )}
 
-          {user ? (
+          {loading ? (
+            <div className="flex items-center gap-2 text-white">
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+              <span className="hidden sm:block text-sm">Cargando...</span>
+            </div>
+          ) : user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="text-white hover:bg-white/10 p-3">
-                  <User className="h-7 w-7" />
+                  <div className="flex items-center gap-2">
+                    <User className="h-6 w-6" />
+                    <span className="hidden sm:block font-medium text-sm">
+                      Hola, {user.name?.split(' ')[0] || 'Usuario'}
+                    </span>
+                  </div>
                   <span className="sr-only">Perfil de usuario</span>
                 </Button>
               </DropdownMenuTrigger>

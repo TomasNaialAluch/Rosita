@@ -1,4 +1,4 @@
-import { getNewsBySlug } from "@/lib/news"
+import { getNewsBySlug, getPublishedNews } from "@/lib/news"
 import type { Metadata } from "next"
 import NewsArticlePageClient from "./NewsArticlePageClient"
 
@@ -6,6 +6,13 @@ interface Props {
   params: {
     slug: string
   }
+}
+
+export async function generateStaticParams() {
+  const news = await getPublishedNews()
+  return news.map((article) => ({
+    slug: article.slug,
+  }))
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

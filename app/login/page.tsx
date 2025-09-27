@@ -46,7 +46,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const { login, loading } = useAuth()
+  const { login, loginWithGoogle, loading } = useAuth()
   const { toast } = useToast()
   const router = useRouter()
 
@@ -92,14 +92,33 @@ export default function LoginPage() {
     }
   }
 
-  const handleGoogleLogin = () => {
-    toast({
-      title: "Función en desarrollo",
-      description:
-        "Lo sentimos, el inicio de sesión con Google se encuentra en desarrollo. Por favor, usa tu email y contraseña.",
-      variant: "default",
-      duration: 5000,
-    })
+  const handleGoogleLogin = async () => {
+    setIsLoading(true)
+    try {
+      const success = await loginWithGoogle()
+      if (success) {
+        toast({
+          title: "¡Bienvenido!",
+          description: "Has iniciado sesión con Google correctamente",
+        })
+        router.push("/")
+      } else {
+        toast({
+          title: "Error",
+          description: "No se pudo iniciar sesión con Google",
+          variant: "destructive",
+        })
+      }
+    } catch (error) {
+      console.error("Google login error:", error)
+      toast({
+        title: "Error",
+        description: "Ocurrió un error al iniciar sesión con Google",
+        variant: "destructive",
+      })
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   if (loading) {
@@ -137,13 +156,13 @@ export default function LoginPage() {
             <CardDescription>Ingresa tus credenciales para acceder a tu cuenta</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Google Login - Disabled with message */}
+            {/* Google Login - Enabled */}
             <div className="relative">
               <Button
                 variant="outline"
-                className="w-full opacity-75 cursor-not-allowed"
+                className="w-full"
                 onClick={handleGoogleLogin}
-                disabled={false}
+                disabled={isLoading}
               >
                 <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
                   <path
@@ -166,13 +185,6 @@ export default function LoginPage() {
                 Continuar con Google
               </Button>
 
-              {/* Development notice */}
-              <div className="absolute -top-2 -right-2">
-                <div className="bg-rosita-orange text-white text-xs px-2 py-1 rounded-full flex items-center gap-1">
-                  <AlertCircle className="h-3 w-3" />
-                  En desarrollo
-                </div>
-              </div>
             </div>
 
             <div className="relative">

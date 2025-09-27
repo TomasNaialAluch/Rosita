@@ -8,18 +8,11 @@ import { ProductCard } from "@/components/product-card"
 import { WelcomeBanner } from "@/components/welcome-banner"
 import { RegistrationPrompt } from "@/components/registration-prompt"
 import { FloatingCTA } from "@/components/floating-cta"
-import { getFeaturedProducts } from "@/lib/products"
+import { getFeaturedProducts } from "@/lib/products-db"
 
 export default async function HomePage() {
-  let featuredProducts = []
-
-  try {
-    featuredProducts = await getFeaturedProducts()
-  } catch (error) {
-    console.warn("Error loading featured products:", error)
-    // Los productos de demostración se cargarán automáticamente
-    featuredProducts = []
-  }
+  // Usar la función optimizada con caché
+  const featuredProducts = await getFeaturedProducts()
 
   return (
     <div className="min-h-screen">

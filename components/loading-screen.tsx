@@ -13,23 +13,23 @@ export function LoadingScreen({ onComplete }: LoadingScreenProps) {
   const [showLight, setShowLight] = useState(false)
 
   useEffect(() => {
-    // Fase 1: Mostrar Rosita (2 segundos)
+    // Fase 1: Mostrar Rosita (4 segundos)
     const phase1Timer = setTimeout(() => {
       setAnimationPhase(1)
-    }, 2000)
+    }, 4000)
 
-    // Fase 2: Transición suave a la rosa (3 segundos)
+    // Fase 2: Transición suave a la rosa (5 segundos)
     const phase2Timer = setTimeout(() => {
       setAnimationPhase(2)
       setShowBlinds(true)
       // Efecto de luz cuando se levanta la persiana
       setTimeout(() => setShowLight(true), 500)
-    }, 5000)
+    }, 9000)
 
-    // Fase 3: Completar animación (1 segundo)
+    // Fase 3: Completar animación (2 segundos)
     const completeTimer = setTimeout(() => {
       onComplete()
-    }, 6000)
+    }, 11000)
 
     return () => {
       clearTimeout(phase1Timer)
@@ -40,8 +40,6 @@ export function LoadingScreen({ onComplete }: LoadingScreenProps) {
 
   return (
     <div className="fixed inset-0 bg-rosita-pink flex items-center justify-center z-50 overflow-hidden">
-      {/* Fondo con gradiente sutil */}
-      <div className="absolute inset-0 bg-gradient-to-br from-rosita-pink via-rosita-pink/95 to-rosita-pink/90" />
       
           {/* Contenido principal */}
           <div className="relative z-10 flex flex-col items-center justify-center">
@@ -61,7 +59,8 @@ export function LoadingScreen({ onComplete }: LoadingScreenProps) {
                   className="rounded-full object-cover"
                   style={{
                     filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.1))',
-                    mixBlendMode: 'multiply'
+                    backgroundColor: 'transparent',
+                    mixBlendMode: 'normal'
                   }}
                 />
               </div>

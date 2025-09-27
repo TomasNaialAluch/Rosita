@@ -44,7 +44,7 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const { register, loading } = useAuth()
+  const { register, loginWithGoogle, loading } = useAuth()
   const { toast } = useToast()
   const router = useRouter()
 
@@ -152,14 +152,33 @@ export default function RegisterPage() {
     }
   }
 
-  const handleGoogleRegister = () => {
-    toast({
-      title: "Función en desarrollo",
-      description:
-        "Lo sentimos, el registro con Google se encuentra en desarrollo. Por favor, regístrate usando el formulario.",
-      variant: "default",
-      duration: 5000,
-    })
+  const handleGoogleRegister = async () => {
+    setIsLoading(true)
+    try {
+      const success = await loginWithGoogle()
+      if (success) {
+        toast({
+          title: "¡Bienvenido!",
+          description: "Te has registrado con Google correctamente",
+        })
+        router.push("/")
+      } else {
+        toast({
+          title: "Error",
+          description: "No se pudo registrar con Google",
+          variant: "destructive",
+        })
+      }
+    } catch (error) {
+      console.error("Google register error:", error)
+      toast({
+        title: "Error",
+        description: "Ocurrió un error al registrarse con Google",
+        variant: "destructive",
+      })
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   if (loading) {
@@ -197,13 +216,13 @@ export default function RegisterPage() {
             <CardDescription>Completa tus datos para crear tu cuenta</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Google Register - Disabled with message */}
+            {/* Google Register - Enabled */}
             <div className="relative">
               <Button
                 variant="outline"
-                className="w-full opacity-75 cursor-not-allowed bg-transparent"
+                className="w-full"
                 onClick={handleGoogleRegister}
-                disabled={false}
+                disabled={isLoading}
               >
                 <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
                   <path
@@ -226,13 +245,6 @@ export default function RegisterPage() {
                 Registrarse con Google
               </Button>
 
-              {/* Development notice */}
-              <div className="absolute -top-2 -right-2">
-                <div className="bg-rosita-orange text-white text-xs px-2 py-1 rounded-full flex items-center gap-1">
-                  <AlertCircle className="h-3 w-3" />
-                  En desarrollo
-                </div>
-              </div>
             </div>
 
             <div className="relative">

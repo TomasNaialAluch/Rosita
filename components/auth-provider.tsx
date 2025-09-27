@@ -2,26 +2,16 @@
 
 import type React from "react"
 import { createContext, useContext, useState, useEffect } from "react"
-import { supabase } from "@/lib/supabase"
-import type { User as SupabaseUser } from "@supabase/supabase-js"
-
-type UserProfile = {
-  id: string
-  name: string
-  phone?: string | null
-  address?: string | null
-  address_type?: "casa" | "departamento" | null
-  floor?: string | null
-  buzzer?: string | null
-  is_admin: boolean
-  avatar_url?: string | null
-  created_at: string
-  updated_at: string
-}
-
-interface User extends UserProfile {
-  email: string
-}
+import { 
+  loginWithEmail, 
+  registerWithEmail, 
+  loginWithGoogle, 
+  logoutUser, 
+  onAuthStateChange,
+  updateUserProfile,
+  type User,
+  type UserProfile
+} from "@/lib/firebase-auth"
 
 interface AuthContextType {
   user: User | null
@@ -47,96 +37,6 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
-
-  const getInitialSession = async () => {
-    try {
-      const {
-        data: { session },
-        error,
-      } = await supabase.auth.getSession()
-
-      if (error) {
-        console.error("Error getting session:", error)
-      }
-
-      if (session?.user) {
-        await fetchUserProfile(session.user)
-      }
-    } catch (error) {
-      console.error("Error in getInitialSession:", error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const fetchUserProfile = async (supabaseUser: SupabaseUser) => {
-    try {
-      // Check if user_profiles table exists and get profile
-      const { data: profile, error } = await supabase
-        .from("user_profiles")
-        .select("*")
-        .eq("id", supabaseUser.id)
-        .single()
-
-      if (error) {
-        console.log("Profile fetch error:", error.message)
-
-        // If table doesn't exist or profile doesn't exist, create temporary user
-        const tempUser: User = {
-          id: supabaseUser.id,
-          name:
-            supabaseUser.user_metadata?.name ||
-            supabaseUser.user_metadata?.full_name ||
-            supabaseUser.email?.split("@")[0] ||
-            "Usuario",
-          email: supabaseUser.email || "",
-          phone: supabaseUser.user_metadata?.phone || null,
-          address: supabaseUser.user_metadata?.address || null,
-          address_type: (supabaseUser.user_metadata?.addressType as "casa" | "departamento") || null,
-          floor: supabaseUser.user_metadata?.floor || null,
-          buzzer: supabaseUser.user_metadata?.buzzer || null,
-          is_admin: supabaseUser.email === "admin@rositacarniceria.com",
-          avatar_url: supabaseUser.user_metadata?.avatar_url || null,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        }
-
-        setUser(tempUser)
-        return
-      }
-
-      if (profile) {
-        setUser({
-          ...profile,
-          email: supabaseUser.email || "",
-        })
-      }
-    } catch (error) {
-      console.error("Error in fetchUserProfile:", error)
-
-      // Create temporary user as fallback
-      const tempUser: User = {
-        id: supabaseUser.id,
-        name:
-          supabaseUser.user_metadata?.name ||
-          supabaseUser.user_metadata?.full_name ||
-          supabaseUser.email?.split("@")[0] ||
-          "Usuario",
-        email: supabaseUser.email || "",
-        phone: null,
-        address: null,
-        address_type: null,
-        floor: null,
-        buzzer: null,
-        is_admin: false,
-        avatar_url: supabaseUser.user_metadata?.avatar_url || null,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      }
-
-      setUser(tempUser)
-    }
-  }
 
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
@@ -165,40 +65,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return true
       }
 
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      })
-
-      if (error) {
-        console.error("Login error:", error)
-        return false
+      const result = await loginWithEmail(email, password)
+      if (result.success && result.user) {
+        setUser(result.user)
+        return true
       }
-
-      return !!data.user
+      return false
     } catch (error) {
       console.error("Login error:", error)
       return false
     }
   }
 
-  const loginWithGoogle = async (): Promise<boolean> => {
+  const loginWithGoogleAuth = async (): Promise<boolean> => {
     try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
-        },
-      })
-
-      if (error) {
-        console.error("Google login error:", error)
-        return false
+      const result = await loginWithGoogle()
+      if (result.success && result.user) {
+        setUser(result.user)
+        return true
       }
-
-      return true
+      return false
     } catch (error) {
-      console.error("Google login exception:", error)
+      console.error("Google login error:", error)
       return false
     }
   }
@@ -214,29 +102,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     buzzer?: string
   }): Promise<boolean> => {
     try {
-      const { data, error } = await supabase.auth.signUp({
-        email: userData.email,
-        password: userData.password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
-          data: {
-            name: userData.name,
-            full_name: userData.name,
-            phone: userData.phone || null,
-            address: userData.address || null,
-            addressType: userData.addressType || null,
-            floor: userData.floor || null,
-            buzzer: userData.buzzer || null,
-          },
-        },
-      })
-
-      if (error) {
-        console.error("Registration error:", error)
-        return false
+      const result = await registerWithEmail(userData)
+      if (result.success && result.user) {
+        setUser(result.user)
+        return true
       }
-
-      return !!data.user
+      return false
     } catch (error) {
       console.error("Registration error:", error)
       return false
@@ -253,10 +124,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return
       }
 
-      const { error } = await supabase.auth.signOut()
-      if (error) {
-        console.error("Logout error:", error)
-      }
+      await logoutUser()
       setUser(null)
     } catch (error) {
       console.error("Logout error:", error)
@@ -273,23 +141,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return true
       }
 
-      const { error } = await supabase.from("user_profiles").update(userData).eq("id", user.id)
-
-      if (error) {
-        console.log("Profile update failed, updating local state only")
-        // Update local state as fallback
+      const success = await updateUserProfile(user.id, userData)
+      if (success) {
+        // Update local state
         setUser((prev) => (prev ? { ...prev, ...userData } : null))
         return true
       }
-
-      // Update local state
-      setUser((prev) => (prev ? { ...prev, ...userData } : null))
-      return true
+      return false
     } catch (error) {
       console.error("Profile update error:", error)
-      // Update local state as fallback
-      setUser((prev) => (prev ? { ...prev, ...userData } : null))
-      return true
+      return false
     }
   }
 
@@ -319,33 +180,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return false
     }
 
-    // Si no hay admin especial, proceder con la sesión normal
+    // Si no hay admin especial, proceder con Firebase Auth
     if (!checkSpecialAdmin()) {
-      getInitialSession()
-    }
-
-    // Escuchar cambios de autenticación solo si no es admin especial
-    let subscription: any = null
-    if (!localStorage.getItem("special-admin")) {
-      const {
-        data: { subscription: authSubscription },
-      } = supabase.auth.onAuthStateChange(async (event, session) => {
-        console.log("Auth state change:", event, session?.user?.email)
-
-        if (event === "SIGNED_IN" && session?.user) {
-          await fetchUserProfile(session.user)
-        } else if (event === "SIGNED_OUT") {
-          setUser(null)
-        }
+      const unsubscribe = onAuthStateChange((user) => {
+        setUser(user)
         setLoading(false)
       })
-      subscription = authSubscription
-    }
 
-    return () => {
-      if (subscription) {
-        subscription.unsubscribe()
-      }
+      return () => unsubscribe()
     }
   }, [])
 
@@ -355,7 +197,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         user,
         loading,
         login,
-        loginWithGoogle,
+        loginWithGoogle: loginWithGoogleAuth,
         register,
         logout,
         updateProfile,
