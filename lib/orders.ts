@@ -1,4 +1,4 @@
-import { supabase } from "./supabase"
+// Sistema de órdenes simplificado sin Supabase
 
 export interface Order {
   id: string

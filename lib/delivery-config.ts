@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase"
+// Configuración de delivery simplificada sin Supabase
 
 export interface DeliveryConfig {
   id: number
