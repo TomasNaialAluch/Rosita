@@ -5,7 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ChefHat, Sparkles, MessageCircle } from "lucide-react"
-import { getProducts, getProductsByCategory, type Product } from "@/lib/products"
+import { getProducts, getProductsByCategory } from "@/lib/products-db"
+import { type Product } from "@/lib/products"
 import RecipeChat from "@/components/recipe-chat"
 
 export default function RecipePageContent() {

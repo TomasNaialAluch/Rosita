@@ -34,7 +34,7 @@ if (process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_USE_FIREBA
     connectStorageEmulator(storage, 'localhost', 9199);
   } catch (error) {
     // Los emuladores ya están conectados o no están disponibles
-    console.log('Firebase emulators not available or already connected');
+    // console.log('Firebase emulators not available or already connected');
   }
 }
 

@@ -33,29 +33,29 @@ export async function getProducts(): Promise<Product[]> {
   // Verificar caché primero
   const cached = cache.get<Product[]>("products");
   if (cached) {
-    console.log("Using cached products");
+        // console.log("Using cached products");
     return cached;
   }
 
   try {
-    console.log("Fetching products from Firebase...")
+    // console.log("Fetching products from Firebase...")
     const q = query(collection(db, "products"), orderBy("created_at", "desc"))
     const snapshot = await getDocs(q)
 
     if (snapshot.empty) {
-      console.log("No products found in Firebase, returning default products.")
+      // console.log("No products found in Firebase, returning default products.")
       cache.set("products", defaultProducts, 2 * 60 * 1000); // Cache for 2 minutes
       return defaultProducts
     }
 
     const products = snapshot.docs.map((doc, index) => convertFirebaseProductToProduct(doc, index))
 
-    console.log(`Loaded ${products.length} products from Firebase.`)
+    // console.log(`Loaded ${products.length} products from Firebase.`)
     cache.set("products", products, 5 * 60 * 1000); // Cache for 5 minutes
     return products
   } catch (error) {
     console.error("Firebase error fetching products:", error)
-    console.log("Falling back to default products due to Firebase error.")
+    // console.log("Falling back to default products due to Firebase error.")
     cache.set("products", defaultProducts, 1 * 60 * 1000); // Cache for 1 minute on error
     return defaultProducts
   }
