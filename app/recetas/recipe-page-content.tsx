@@ -44,7 +44,7 @@ export default function RecipePageContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 flex items-center justify-center">
+      <div className="bg-gradient-to-br from-orange-50 to-red-50 flex items-center justify-center py-20">
         <div className="text-center">
           <ChefHat className="h-12 w-12 text-[#C85A6E] mx-auto mb-4 animate-pulse" />
           <p className="text-gray-600">Cargando productos...</p>
@@ -54,7 +54,7 @@ export default function RecipePageContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50">
+    <div className="bg-gradient-to-br from-orange-50 to-red-50">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="text-center mb-12">

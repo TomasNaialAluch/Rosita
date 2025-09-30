@@ -1,4 +1,6 @@
 import type { Metadata } from "next"
+import { Navbar } from "@/components/navbar"
+import { Footer } from "@/components/footer"
 import RecipePageContent from "./recipe-page-content"
 
 export const metadata: Metadata = {
@@ -8,5 +10,11 @@ export const metadata: Metadata = {
 }
 
 export default function RecipesPage() {
-  return <RecipePageContent />
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Navbar />
+      <RecipePageContent />
+      <Footer />
+    </div>
+  )
 }

@@ -9,10 +9,16 @@ interface Props {
 }
 
 export async function generateStaticParams() {
-  const news = await getPublishedNews()
-  return news.map((article) => ({
-    slug: article.slug,
-  }))
+  try {
+    const news = await getPublishedNews()
+    return news.map((article) => ({
+      slug: article.slug,
+    }))
+  } catch (error) {
+    console.error("Error generating static params:", error)
+    // Retornar array vacío si hay error
+    return []
+  }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

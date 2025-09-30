@@ -61,7 +61,10 @@ export default function LoginPage() {
           title: "¡Bienvenido!",
           description: "Has iniciado sesión correctamente",
         })
-        router.push("/")
+        
+        // Redirigir a la tienda por defecto, o a la página anterior si existe
+        const returnUrl = router.query.returnUrl as string || '/tienda'
+        router.push(returnUrl)
       } else {
         toast({
           title: "Error",
@@ -101,7 +104,10 @@ export default function LoginPage() {
           title: "¡Bienvenido!",
           description: "Has iniciado sesión con Google correctamente",
         })
-        router.push("/")
+        
+        // Redirigir a la tienda por defecto, o a la página anterior si existe
+        const returnUrl = router.query.returnUrl as string || '/tienda'
+        router.push(returnUrl)
       } else {
         toast({
           title: "Error",

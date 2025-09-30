@@ -1,5 +1,5 @@
 import { db } from "@/lib/firebase"
-import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, orderBy, where } from "firebase/firestore"
+import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, orderBy, where, Timestamp } from "firebase/firestore"
 import { products as defaultProducts, type Product } from "@/lib/products"
 import { cache } from "@/lib/cache"
 
@@ -33,31 +33,28 @@ export async function getProducts(): Promise<Product[]> {
   // Verificar caché primero
   const cached = cache.get<Product[]>("products");
   if (cached) {
-        // console.log("Using cached products");
     return cached;
   }
 
   try {
-    // console.log("Fetching products from Firebase...")
     const q = query(collection(db, "products"), orderBy("created_at", "desc"))
     const snapshot = await getDocs(q)
 
     if (snapshot.empty) {
-      // console.log("No products found in Firebase, returning default products.")
-      cache.set("products", defaultProducts, 2 * 60 * 1000); // Cache for 2 minutes
-      return defaultProducts
+      // Retornar array vacío en lugar de productos hardcodeados
+      cache.set("products", [], 2 * 60 * 1000);
+      return []
     }
 
     const products = snapshot.docs.map((doc, index) => convertFirebaseProductToProduct(doc, index))
 
-    // console.log(`Loaded ${products.length} products from Firebase.`)
-    cache.set("products", products, 5 * 60 * 1000); // Cache for 5 minutes
+    cache.set("products", products, 5 * 60 * 1000);
     return products
   } catch (error) {
     console.error("Firebase error fetching products:", error)
-    // console.log("Falling back to default products due to Firebase error.")
-    cache.set("products", defaultProducts, 1 * 60 * 1000); // Cache for 1 minute on error
-    return defaultProducts
+    // Retornar array vacío en lugar de productos hardcodeados
+    cache.set("products", [], 1 * 60 * 1000);
+    return []
   }
 }
 
@@ -65,7 +62,6 @@ export async function getFeaturedProducts(): Promise<Product[]> {
   // Verificar caché primero
   const cached = cache.get<Product[]>("featured-products");
   if (cached) {
-    console.log("Using cached featured products");
     return cached;
   }
 
@@ -79,22 +75,22 @@ export async function getFeaturedProducts(): Promise<Product[]> {
     const snapshot = await getDocs(q)
 
     if (snapshot.empty) {
-      const defaultFeatured = defaultProducts.filter((p) => p.featured && p.inStock);
-      cache.set("featured-products", defaultFeatured, 2 * 60 * 1000);
-      return defaultFeatured;
+      // Retornar array vacío en lugar de productos hardcodeados
+      cache.set("featured-products", [], 2 * 60 * 1000);
+      return [];
     }
 
     const products = snapshot.docs
       .map((doc, index) => convertFirebaseProductToProduct(doc, index))
       .filter(product => product.inStock) // Filtrar inStock en el cliente
 
-    cache.set("featured-products", products, 5 * 60 * 1000); // Cache for 5 minutes
+    cache.set("featured-products", products, 5 * 60 * 1000);
     return products
   } catch (error) {
     console.error("Critical error in getFeaturedProducts:", error)
-    const defaultFeatured = defaultProducts.filter((p) => p.featured && p.inStock);
-    cache.set("featured-products", defaultFeatured, 1 * 60 * 1000); // Cache for 1 minute on error
-    return defaultFeatured;
+    // Retornar array vacío en lugar de productos hardcodeados
+    cache.set("featured-products", [], 1 * 60 * 1000);
+    return [];
   }
 }
 

@@ -23,6 +23,7 @@ import {
   generateSlug,
   type NewsArticle,
   type CreateNewsArticle,
+  type UpdateNewsArticle,
 } from "@/lib/news"
 
 interface NewsManagementModalProps {
@@ -89,7 +90,11 @@ export function NewsManagementModal({ isOpen, onClose }: NewsManagementModalProp
 
     try {
       if (editingNews) {
-        const updated = await updateNews({ ...formData, id: editingNews.id })
+        const updateData: UpdateNewsArticle = { 
+          ...formData, 
+          id: editingNews.id 
+        }
+        const updated = await updateNews(updateData)
         if (updated) {
           setNews(news.map((item) => (item.id === editingNews.id ? updated : item)))
         }
@@ -124,7 +129,7 @@ export function NewsManagementModal({ isOpen, onClose }: NewsManagementModalProp
     setIsFormOpen(true)
   }
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     if (confirm("¿Estás seguro de que quieres eliminar esta noticia?")) {
       setLoading(true)
       try {

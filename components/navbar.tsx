@@ -3,6 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
+import { usePathname } from "next/navigation"
 import { Menu, ShoppingCart, User, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
@@ -17,6 +18,13 @@ export function Navbar() {
   const { itemCount } = useCart()
   const { user, logout, loading } = useAuth()
   const scrolled = useScroll()
+  const pathname = usePathname()
+  
+  // Crear URL de retorno para el login
+  const getLoginUrl = () => {
+    const currentPath = pathname === '/' ? '/tienda' : pathname
+    return `/login?returnUrl=${encodeURIComponent(currentPath)}`
+  }
 
   const navigation = [
     { name: "Inicio", href: "/" },
@@ -156,7 +164,7 @@ export function Navbar() {
             </DropdownMenu>
           ) : (
             <Button asChild size="sm" className="bg-[#D98E04] text-white hover:bg-[#D98E04]/90 font-medium text-sm">
-              <Link href="/login">Ingresar</Link>
+              <Link href={getLoginUrl()}>Ingresar</Link>
             </Button>
           )}
         </div>
