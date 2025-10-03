@@ -9,16 +9,9 @@ interface Props {
 }
 
 export async function generateStaticParams() {
-  try {
-    const news = await getPublishedNews()
-    return news.map((article) => ({
-      slug: article.slug,
-    }))
-  } catch (error) {
-    console.error("Error generating static params:", error)
-    // Retornar array vacío si hay error
-    return []
-  }
+  // Durante el build, retornar array vacío para evitar errores de Firebase
+  // Las páginas se generarán dinámicamente cuando sea necesario
+  return []
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

@@ -77,7 +77,7 @@ export async function getPublishedNews(): Promise<NewsArticle[]> {
     if (cached) {
       return cached;
     }
-
+    
     const q = query(
       collection(db, "news"),
       where("is_published", "==", true),
@@ -93,7 +93,7 @@ export async function getPublishedNews(): Promise<NewsArticle[]> {
     }
 
     const news = snapshot.docs.map(convertFirebaseNewsToNews)
-    
+
     cache.set("published-news", news, 5 * 60 * 1000);
     return news
   } catch (error) {
@@ -158,11 +158,11 @@ export async function createNews(newsData: CreateNewsArticle): Promise<NewsArtic
     const slug = newsData.slug || generateSlug(newsData.title)
     
     const articleData = {
-      title: newsData.title,
+            title: newsData.title,
       slug,
-      excerpt: newsData.excerpt || "",
-      content: newsData.content,
-      image_url: newsData.image_url || "",
+            excerpt: newsData.excerpt || "",
+            content: newsData.content,
+            image_url: newsData.image_url || "",
       author: newsData.author || "Rosita Carnicería",
       category: newsData.category || "general",
       tags: newsData.tags || [],

@@ -9,12 +9,9 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  // Solo usar export para builds de producción, no en desarrollo
-  ...(process.env.NODE_ENV === 'production' && {
-    output: 'export',
-    trailingSlash: true,
-    distDir: 'dist'
-  }),
+  // Configuración para Firebase Hosting con servidor
+  trailingSlash: true,
+  distDir: 'dist',
   // Optimizaciones para desarrollo
   experimental: {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
