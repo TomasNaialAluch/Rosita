@@ -4,15 +4,15 @@ import { getAuth, connectAuthEmulator } from 'firebase/auth';
 import { getStorage, connectStorageEmulator } from 'firebase/storage';
 import { getAnalytics } from 'firebase/analytics';
 
-// Configuración de Firebase
+// Configuración de Firebase - usar variables de entorno o valores por defecto
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "AIzaSyCdilgyg87D9pDIM1Gvs-H5DqtfbTpC3ys",
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "rosita-b76eb.firebaseapp.com",
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "rosita-b76eb",
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "rosita-b76eb.firebasestorage.app",
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "778473943709",
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || "1:778473943709:web:a44d114c61ab7456f99a74",
-  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || "G-JHC9CKT0BS"
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "demo-key",
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "demo-project.firebaseapp.com",
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "demo-project",
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "demo-project.firebasestorage.app",
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "123456789",
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || "1:123456789:web:demo",
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || "G-DEMO"
 };
 
 // Inicializar Firebase

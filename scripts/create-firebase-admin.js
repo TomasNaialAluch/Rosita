@@ -29,9 +29,8 @@ console.log(`
 6. Haz clic en "Save"
 
 🎯 ALTERNATIVA MÁS FÁCIL:
-Si no funciona lo anterior, usa estas credenciales que ya existen:
-- Email: ELTETE@gmail.com  
-- Password: DiosesUno33!
+Si no funciona lo anterior, contacta al administrador del sistema
+para obtener las credenciales de acceso.
 
 ✅ Una vez configurado, podrás hacer login en:
 https://rosita-b76eb.web.app/login

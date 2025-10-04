@@ -9,7 +9,7 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  // Configuración para Firebase Hosting con servidor
+  // Configuración para Firebase Hosting
   trailingSlash: true,
   distDir: 'dist',
   // Optimizaciones para desarrollo
